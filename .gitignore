@@ -1,0 +1,19 @@
+.env
+.env.*
+!.env.example
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+node_modules/
+frontend/dist/
+*.tsbuildinfo
+data/
+artifacts/
+*.log
+
+/data/
+/artifacts/
+# App geography is public source data, not private transaction data.
+!frontend/src/data/
+!frontend/src/data/korea-region.json

@@ -1,0 +1,10 @@
+{
+  "commodity": "배추", "origin": "강원 평창 · 가상 산지", "planned_date": null,
+  "source": "synthetic", "quantity_kg": 5000, "marketable_pct": 95,
+  "other_cost": 0, "allocation_pct": [60, 40], "grid_step_pct": 5,
+  "price_drop_pct": 10, "transport_increase_pct": 10,
+  "markets": [
+    {"id":"garak","name":"서울 가락","price_per_kg":1500,"commission_pct":6,"handling_pct":1,"market_fee_pct":0.5,"handling_per_kg":0,"vehicle_cost":180000,"vehicle_capacity_kg":5000,"transport_per_kg":10,"min_kg":0,"max_kg":100000},
+    {"id":"guri","name":"구리","price_per_kg":1600,"commission_pct":6,"handling_pct":1,"market_fee_pct":0.5,"handling_per_kg":0,"vehicle_cost":260000,"vehicle_capacity_kg":5000,"transport_per_kg":12,"min_kg":0,"max_kg":100000}
+  ]
+}
