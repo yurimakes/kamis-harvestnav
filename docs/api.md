@@ -4,10 +4,11 @@
 
 | 경로 | 동작 |
 |---|---|
-| `GET /api/health` | 앱 버전, KAMIS 인증 설정 여부, 예측 모델 미연결 상태 |
+| `GET /api/health` | 앱 버전, KAMIS·AI 설정 여부, 예측 모델 미연결 상태 |
 | `GET /api/examples/scenario` | 배추 합성 시나리오 전체 입력 |
 | `POST /api/simulation` | 현재 배분의 판매대금·항목별 비용·수취액 |
 | `POST /api/strategies/compare` | 현재·단일·격자 후보 및 스트레스 결과 비교 |
+| `POST /api/ai/ask` | 선택적으로 연결한 AI의 현재 화면 설명 |
 | `GET /api/kamis/prices` | 조건별 KAMIS 조회·정규화·분석 |
 
 시뮬레이션 입력 전체 예제는 [합성 시나리오](../examples/cabbage.synthetic.json)입니다. 단위는 kg·원·원/kg·백분율이며, 상품화율과 수수료율은 0~100입니다. 총 물량은 정수 0~100,000kg, 시장은 2~3개입니다. 알 수 없는 필드는 거부합니다.
@@ -32,3 +33,13 @@ KAMIS의 `status`는 `not_configured`, `upstream_error`, `empty`, `live` 중 하
 프론트엔드의 별도 근거 JSON은 선택 시계열과 조회 조건·분석·출처를, CSV는 선택 가격표를 저장합니다. 조건·결과 JSON의 `decision_context`는 사용자가 KAMIS 참고 비교 버튼을 누른 경우의 자료와 −10% 가정을 보존합니다. 이후 변경한 하락률은 `current_price_drop_pct`와 `assumption_has_changed`로 구분합니다. −10%는 조사 변화율에서 추정한 경매 하락률이 아닙니다.
 
 관측 변화율이 음수이면 **관측 하락률을 같은 하락 가정으로 비교**하는 추가 버튼을 제공합니다. 조사 가격의 실제 과거 하락률을 경매가에도 동일하게 가정하는 스트레스이며, 두 가격 사이의 전이 관계나 미래 경매 하락률을 검증한 값은 아닙니다. 저장 자료의 `assumption.basis`는 이 경우 `observed_change_scenario`, 별도 −10% 검토는 `manual_review`로 구분합니다.
+
+## 선택적 AI 설명
+
+`GET /api/health`의 `ai_configured`는 서버 환경변수 `OPENAI_API_KEY`와 `OPENAI_MODEL`의 설정 여부입니다. 실제 제공자 인증·모델 이용 성공을 보장하지 않습니다. 기존 시뮬레이션과 KAMIS 인증 설정에 영향을 주지 않습니다.
+
+`POST /api/ai/ask`는 `question`(1~500자), `history`(최대 12개 user/assistant 기록), `sheet_context`(화면 입력·계산 결과·KAMIS 분석 요약)를 받습니다. 요청 크기는 32KiB이며, 성공 응답은 `answer`, `sources`(최대 5개 탭/라벨), `disclaimer`입니다. 근거 탭 값은 `simulator`, `map`, `detail`, `kamis`, `basis`로 제한됩니다.
+
+HTTP 413은 요청 크기 초과, 422는 잘못된 입력, 429는 분당 제한(프로세스별 IP당 10회), 503은 AI 미설정, 502는 제공자 실패·시간 초과·잘못된 응답입니다. 예외 원문·인증키는 반환하지 않습니다. 제한 정보는 메모리에서만 유지되며 재시작하면 초기화됩니다.
+
+OpenAI Responses API에 `store=false`와 구조화된 JSON 응답 형식을 사용합니다. 서버 제한 시간은 30초입니다. 모델은 환경변수로 명시하고, 자동으로 선택하거나 유료 키를 발급하지 않습니다. 질문 전송 시 화면 요약이 제공자에게 전달됨을 UI에 표시하며 서버의 대화 저장 DB는 없습니다. 브라우저 탭 세션에 최근 대화를 보관하고 사용자가 지울 수 있습니다. 계산 결과·새 가격 예측을 AI로 대체하지 않습니다.

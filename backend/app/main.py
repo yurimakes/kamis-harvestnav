@@ -10,6 +10,7 @@ from fastapi.staticfiles import StaticFiles
 from .schemas import Scenario
 from .services.portal import PortalClient, configured, KST
 from .services.simulation import Infeasible, compare, evaluate, public_result
+from .services import ai
 
 PROJECT = Path(__file__).resolve().parents[2]
 app = FastAPI(title="HarvestNav", version="0.1.0")
@@ -26,7 +27,12 @@ async def validation_error(request: Request, exc: RequestValidationError):
 @app.get("/api/health")
 def health():
     return {"service": "HarvestNav", "version": "0.1.0", "kamis_configured": configured(),
-            "prediction_model": "not_loaded"}
+            "prediction_model": "not_loaded", "ai_configured": ai.configured()}
+
+
+@app.post("/api/ai/ask")
+async def ai_ask(request: Request):
+    return await ai.ask(request)
 
 
 @app.get("/api/examples/scenario")
