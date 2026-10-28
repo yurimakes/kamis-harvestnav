@@ -1,6 +1,6 @@
 # API 계약
 
-> 현재 기본 조회는 공공데이터포털 `perRegion/price`입니다. 인증·단위·실행은 [현재 연동 가이드](portal-integration.md)를 우선 적용하세요. 아래 자체 API 설명은 이전 구현 기록이며 serviceKey와 혼용하지 않습니다.
+> 현재 가격 경로는 공공데이터포털 `perRegion/price`입니다. 인증·단위는 [포털 연동](portal-integration.md)을 참고하세요.
 
 | 경로 | 동작 |
 |---|---|
@@ -27,7 +27,7 @@ KAMIS의 `status`는 `not_configured`, `upstream_error`, `empty`, `live` 중 하
 
 각 시계열의 `analysis`는 전체 관측 건수 `observations`, 첫 조사일 `first_date`, 변화율 비교의 실제 달력 일수 `reference_gap_days`를 포함합니다. 정확히 7일 전이 없으면 더 이전 조사값을 사용하므로 화면과 저장 자료에서 실제 비교일·간격을 확인해야 합니다.
 
-조회 실패의 `error_kind`는 `authentication`, `parameters`, `connection`, `format`, `schema`입니다. 공식 오류 코드 900/200을 구분하며 원문 메시지·HTTP 예외 URL·인증값은 돌려주지 않습니다.
+조회 실패의 `error_kind`는 `authentication`, `parameters`, `connection`, `format`, `schema`, `upstream`입니다. 현재 포털 어댑터는 `00`/`000`/`0`을 정상 코드로, `20`/`30`/`31`을 인증 오류로, 다른 비정상 코드를 `upstream`으로 분류합니다. 원문 메시지·HTTP 예외 URL·인증값은 돌려주지 않습니다.
 
 프론트엔드의 별도 근거 JSON은 선택 시계열과 조회 조건·분석·출처를, CSV는 선택 가격표를 저장합니다. 조건·결과 JSON의 `decision_context`는 사용자가 KAMIS 참고 비교 버튼을 누른 경우의 자료와 −10% 가정을 보존합니다. 이후 변경한 하락률은 `current_price_drop_pct`와 `assumption_has_changed`로 구분합니다. −10%는 조사 변화율에서 추정한 경매 하락률이 아닙니다.
 
