@@ -51,10 +51,10 @@ Render Free Web Service는 15분 동안 요청이 없으면 중지되며 다음 
 
 공식 안내: [FastAPI 배포](https://render.com/docs/deploy-fastapi), [Blueprint 설정](https://render.com/docs/blueprint-spec), [환경변수](https://render.com/docs/configure-environment-variables), [무료 서비스 제한](https://render.com/docs/free).
 
-## 선택 사항: AI 설명 패널 활성화
+## AI 설명 연동 설정
 
-기본 배포는 AI 키 없이 계산·KAMIS 조회가 작동하며 기존 AI 질문 메뉴·우측 패널과 질문 예시도 표시합니다. 미연결 상태의 주황색 안내 상자만 표시하지 않고, 질문 전송 버튼은 비활성화합니다. 가짜 AI 답변은 제공하지 않습니다. **현재 제출용 Render 환경에 `OPENAI_API_KEY` 및 `OPENAI_MODEL`을 설정하지 마세요.** AI 엔드포인트는 서버에 남아 있으므로 키를 설정하면 별도의 API 사용료가 발생할 수 있습니다.
+AI 설명 기능은 화면의 출하조건과 계산 결과를 OpenAI Responses API에 전달해 결과 해석을 돕습니다. 수취액 계산은 Python 엔진이 수행합니다.
 
-향후 실제 AI 답변을 활성화하기로 별도 결정하고 실제 응답과 사용료 제한을 검증한 뒤, Render 서비스의 **Environment**에서 `OPENAI_API_KEY`와 `OPENAI_MODEL`을 직접 설정하고 다시 배포합니다. `OPENAI_MODEL`에는 계정에서 이용 가능하고 Responses API 구조화 출력을 지원하는 모델 ID를 명시합니다. `VITE_` 변수나 GitHub 파일에 키를 쓰지 않습니다. 현재 로컬 `.env` 자동 읽기는 공공데이터포털 키용이므로 AI 변수는 서버 프로세스 환경변수로 설정합니다.
+Render 서비스의 **Environment**에서 `OPENAI_API_KEY`와 `OPENAI_MODEL`을 설정하고 다시 배포합니다. `OPENAI_MODEL`에는 해당 API 계정에서 이용 가능하고 Responses API 구조화 출력을 지원하는 모델 ID를 명시합니다. 인증키는 서버에서만 관리하며 프론트엔드 코드·`VITE_` 변수·GitHub 파일에 포함하지 않습니다. 로컬 `.env` 자동 읽기는 공공데이터포털 키용이므로 AI 변수는 서버 프로세스 환경변수로 설정합니다.
 
-질문·최근 대화·현재 입력과 결과 요약·KAMIS 분석 요약이 OpenAI로 전송됩니다. 좌표·포털 인증키는 문맥에 포함하지 않습니다. 제공자 이용료는 해당 API 계정에 적용되므로 활성화한 계정에서 사용 한도를 관리합니다. 실제 모델 응답과 설명 정확성은 활성화 후 별도로 확인합니다. 이 기능의 자동 시험은 모의 제공자 응답을 사용합니다.
+질문·최근 대화·현재 입력과 결과 요약·KAMIS 분석 요약이 OpenAI로 전송됩니다. 좌표·포털 인증키는 문맥에 포함하지 않습니다. API 사용료는 해당 API 계정에 적용되며, 요청 한도와 사용량은 서비스 운영 환경에서 관리합니다. 요청·응답 형식과 제한은 [API 계약](api.md)을 참고하세요.
