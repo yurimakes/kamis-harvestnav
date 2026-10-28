@@ -34,14 +34,14 @@ export function WorkSheet({scenario:s,result:r,busy,error,prices,patch,apply,onN
     <div className="sheet-layout">
       <aside className="sheet-left">
         <section className="sheet-block"><h2 className="band">기본 입력값 <span>출하 조건</span></h2><div className="sheet-inputs">
-          <div className="sheet-field"><span>품목</span><div><b>배추</b><small>합성 시나리오</small></div></div>
+          <div className="sheet-field"><span>품목</span><div><b>배추</b><small>출하 조건 입력</small></div></div>
           <label className="sheet-field"><span>출하 물량</span><div className="sheet-unit"><input aria-label="장표 출하 물량" type="number" min="0" max="100000" value={Number.isNaN(s.quantity_kg)?'':s.quantity_kg} onChange={e=>patch({quantity_kg:e.currentTarget.valueAsNumber})}/><span>kg</span></div></label>
           <label className="sheet-range"><span>서울 가락 비중 <b>{s.allocation_pct[0]}%</b></span><input aria-label="장표 서울 가락 배분 비율" type="range" min="0" max="100" step="5" value={s.allocation_pct[0]} onChange={e=>patch({allocation_pct:[Number(e.target.value),100-Number(e.target.value)]})}/><small>서울 가락 {s.allocation_pct[0]}%<span>구리 {s.allocation_pct[1]}%</span></small></label>
           <label className="sheet-field"><span>상품화율</span><div className="sheet-unit"><input aria-label="장표 상품화율" type="number" min="0" max="100" value={Number.isNaN(s.marketable_pct)?'':s.marketable_pct} onChange={e=>patch({marketable_pct:e.currentTarget.valueAsNumber})}/><span>%</span></div></label>
           <label className="sheet-range"><span>경매가 하락 <b className="stress-ink">−{s.price_drop_pct}%</b></span><input aria-label="장표 가격 하락률" type="range" min="0" max="100" step="0.01" value={s.price_drop_pct} onChange={e=>patch({price_drop_pct:Number(e.target.value)})}/></label>
           <label className="sheet-range"><span>운송비 상승 <b className="stress-ink">+{s.transport_increase_pct}%</b></span><input aria-label="장표 운송비 상승률" type="range" min="0" max="100" value={s.transport_increase_pct} onChange={e=>patch({transport_increase_pct:Number(e.target.value)})}/></label>
         </div><button className="sheet-link" onClick={()=>onNavigate('simulation')}>차량·수수료·물량 제약 상세 설정 <ArrowRight size={13}/></button></section>
-        <section className="sheet-block"><h2 className="band">자료·모델 상태</h2><dl className="sheet-state"><div><dt>KAMIS</dt><dd className={prices?.status==='live'?'':'stress-ink'}><i/>{prices?.status==='live'?'실제 조회 자료 있음':'실제 조회 미완료'}</dd></div><div><dt>경매 단가</dt><dd><i/>가정값 · 수정 가능</dd></div><div><dt>예측 모델</dt><dd><i/>미연결</dd></div><div><dt>실제 수익</dt><dd><i/>검증 안 됨</dd></div></dl><button className="sheet-link" onClick={()=>onNavigate('prices')}>KAMIS 가격 조회하기 <ArrowRight size={13}/></button></section>
+        <section className="sheet-block"><h2 className="band">자료·모델 상태</h2><dl className="sheet-state"><div><dt>KAMIS</dt><dd className={prices?.status==='live'?'':'stress-ink'}><i/>{prices?.status==='live'?'실제 조회 자료 있음':'실제 조회 미완료'}</dd></div><div><dt>경매 단가</dt><dd><i/>입력값 · 기본값은 예시</dd></div><div><dt>예측 모델</dt><dd><i/>미연결</dd></div><div><dt>실제 수익</dt><dd><i/>검증 안 됨</dd></div></dl><button className="sheet-link" onClick={()=>onNavigate('prices')}>KAMIS 가격 조회하기 <ArrowRight size={13}/></button></section>
       </aside>
       <section className="sheet-center" aria-label="출하 결과 비교">
         <ResultVerdict scenario={s} result={r} valid={valid} apply={apply}/>
