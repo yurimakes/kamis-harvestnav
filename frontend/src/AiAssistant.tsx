@@ -22,7 +22,7 @@ export function AiAssistant({open,onClose,onOpen,onFirstQuestion,onNavigate,scen
   const [messages,setMessages]=useState<Message[]>(readMessages),[draft,setDraft]=useState(''),[loading,setLoading]=useState(false),[error,setError]=useState('');
   const [retry,setRetry]=useState<{question:string;context:object;label:string;history:Message[]}|null>(null);
   const input=useRef<HTMLTextAreaElement>(null),scroll=useRef<HTMLDivElement>(null),opener=useRef<HTMLElement|null>(null),request=useRef<AbortController|null>(null),inflight=useRef(false);
-  const label=`${names[tab]||'시뮬레이터 시트'} · 배추 ${s?new Intl.NumberFormat('ko-KR').format(s.quantity_kg):'—'}kg · 가락 ${s?.allocation_pct[0]??'—'}%`;
+  const label=`${names[tab]||'시뮬레이터 시트'} · 배추 ${s?new Intl.NumberFormat('ko-KR').format(s.quantity_kg):'—'}kg · ${s?.markets[0].name??'첫 시장'} ${s?.allocation_pct[0]??'—'}%`;
   function dismiss(){setDismissed(true);try{localStorage.setItem('hn_ai_bubble_dismissed','1');}catch{/* storage can be unavailable */}}
   useEffect(()=>{try{sessionStorage.setItem('hn_ai_messages',JSON.stringify(messages.slice(-12)));}catch{/* conversation still works in memory */}},[messages]);
   useEffect(()=>{if(!open)return;opener.current=document.activeElement as HTMLElement;dismiss();const frame=requestAnimationFrame(()=>input.current?.focus());const esc=(e:KeyboardEvent)=>{if(e.key==='Escape'){e.preventDefault();onClose();}};document.addEventListener('keydown',esc);return()=>{cancelAnimationFrame(frame);document.removeEventListener('keydown',esc);if(opener.current?.isConnected)opener.current.focus();};},[open,onClose]);
