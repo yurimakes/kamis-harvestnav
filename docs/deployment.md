@@ -51,10 +51,10 @@ Render Free Web Service는 15분 동안 요청이 없으면 중지되며 다음 
 
 공식 안내: [FastAPI 배포](https://render.com/docs/deploy-fastapi), [Blueprint 설정](https://render.com/docs/blueprint-spec), [환경변수](https://render.com/docs/configure-environment-variables), [무료 서비스 제한](https://render.com/docs/free).
 
-## 선택 사항: AI 설명 패널 활성화
+## 후속 선택 사항: AI 설명 기능
 
-기본 배포는 AI 키 없이 정상 작동합니다. 패널은 열리지만 미연결 안내와 비활성 전송 버튼을 표시합니다. 가짜 답변은 제공하지 않습니다.
+제출용 화면은 AI 키 없이 정상 작동하며 AI 질문 메뉴·우측 패널을 표시하지 않습니다. AI 설명을 위한 백엔드 엔드포인트는 남아 있지만 프런트엔드에서 사용하지 않습니다. 가짜 AI 답변을 제공하지 않습니다. **현재 제출용 Render 환경에 `OPENAI_API_KEY` 및 `OPENAI_MODEL`을 설정하지 마세요.** 화면에 버튼이 없어도 해당 엔드포인트를 직접 호출할 수 있으므로, 서버에 키를 넣으면 별도의 사용료가 발생할 수 있습니다.
 
-AI 설명을 사용할 때만 Render 서비스의 **Environment**에서 `OPENAI_API_KEY`와 `OPENAI_MODEL`을 직접 설정하고 다시 배포합니다. `OPENAI_MODEL`에는 계정에서 이용 가능하고 Responses API 구조화 출력을 지원하는 모델 ID를 명시합니다. `VITE_` 변수나 GitHub 파일에 키를 쓰지 않습니다. 현재 로컬 `.env` 자동 읽기는 공공데이터포털 키용이므로 AI 변수는 서버 프로세스 환경변수로 설정합니다.
+향후 AI 기능을 공개하기로 별도 결정하고 실제 응답과 사용료 제한을 검증한 뒤, 프런트엔드 질문 패널을 복원한 경우에만 Render 서비스의 **Environment**에서 `OPENAI_API_KEY`와 `OPENAI_MODEL`을 직접 설정하고 다시 배포합니다. `OPENAI_MODEL`에는 계정에서 이용 가능하고 Responses API 구조화 출력을 지원하는 모델 ID를 명시합니다. `VITE_` 변수나 GitHub 파일에 키를 쓰지 않습니다. 현재 로컬 `.env` 자동 읽기는 공공데이터포털 키용이므로 AI 변수는 서버 프로세스 환경변수로 설정합니다.
 
 질문·최근 대화·현재 입력과 결과 요약·KAMIS 분석 요약이 OpenAI로 전송됩니다. 좌표·포털 인증키는 문맥에 포함하지 않습니다. 제공자 이용료는 해당 API 계정에 적용되므로 활성화한 계정에서 사용 한도를 관리합니다. 실제 모델 응답과 설명 정확성은 활성화 후 별도로 확인합니다. 이 기능의 자동 시험은 모의 제공자 응답을 사용합니다.

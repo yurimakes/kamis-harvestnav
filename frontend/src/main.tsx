@@ -1,9 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { ArrowDownRight, ArrowRight, BarChart3, Check, ChevronRight, CircleHelp, ClipboardList, Download, MapPin, Play, RefreshCw, Route as RouteIcon, Settings2, ShieldCheck, Sparkles, Sprout, X } from 'lucide-react';
+import { ArrowDownRight, ArrowRight, BarChart3, Check, ChevronRight, CircleHelp, ClipboardList, Download, MapPin, Play, RefreshCw, Route as RouteIcon, Settings2, ShieldCheck, Sprout, X } from 'lucide-react';
 import { LiveFlow, ShipmentMap } from './Movement';
 import { WorkSheet, ResultVerdict } from './WorkSheet';
-import { AiAssistant } from './AiAssistant';
 import { EvidenceView } from './EvidenceView';
 import { KamisView } from './KamisView';
 import { saveFile } from './PriceEvidence';
@@ -43,8 +42,6 @@ function PriceChart({series}:{series:PriceSeries}) {
 
 function App() {
   const [tab,setTab]=useState('dashboard');
-  const [aiOpen,setAiOpen]=useState(false),[aiAsked,setAiAsked]=useState(false),[aiReady,setAiReady]=useState(false);
-  const openAi=React.useCallback(()=>setAiOpen(true),[]),closeAi=React.useCallback(()=>setAiOpen(false),[]);
   const [s,setS]=useState<Scenario|null>(null);
   const [result,setResult]=useState<Comparison|null>(null);
   const [busy,setBusy]=useState(true);
@@ -60,7 +57,7 @@ function App() {
   const priceRequestRef=useRef(0);
   const [query,setQuery]=useState({start:dateBefore(21),end:today(),region:'1101',kind:'03',rank:'04'});
   const requestRef=useRef(0);
-  useEffect(()=>{api<Scenario>('/api/examples/scenario').then(setS).catch(e=>{setError(e.message);setBusy(false);});api<{kamis_configured:boolean;ai_configured?:boolean}>('/api/health').then(d=>{setKamisConfigured(d.kamis_configured);setAiReady(!!d.ai_configured);}).catch(()=>{});},[]);
+  useEffect(()=>{api<Scenario>('/api/examples/scenario').then(setS).catch(e=>{setError(e.message);setBusy(false);});api<{kamis_configured:boolean}>('/api/health').then(d=>setKamisConfigured(d.kamis_configured)).catch(()=>{});},[]);
   useEffect(()=>{
     if(!s)return;
     const controller=new AbortController(), request=++requestRef.current;
@@ -78,8 +75,8 @@ function App() {
   const goodResult=result&&!busy&&!error;
   const kamisLabel=prices?.status==='live'?'실제 KAMIS 조회':prices?.status==='upstream_error'?'KAMIS 조회 실패':prices?.status==='empty'?'KAMIS 자료 없음':kamisConfigured?'KAMIS 조회 전':'KAMIS 미연결';
   const nav=[{id:'dashboard',label:'시뮬레이터 시트',icon:BarChart3},{id:'map',label:'지도·물량 흐름',icon:MapPin},{id:'simulation',label:'상세 출하 조건',icon:RouteIcon},{id:'prices',label:'KAMIS 가격 흐름',icon:BarChart3},{id:'evidence',label:'계산 근거',icon:ClipboardList}];
-  return <div className={aiOpen?"app-shell ai-open":"app-shell"}>
-    <div className="main-shell"><header className="horizontal-header"><a className="brand" href="#" onClick={e=>{e.preventDefault();setTab('dashboard');}}><span className="brand-icon"><Sprout size={23}/></span><span>출하 내비게이션</span></a><nav aria-label="주 메뉴">{nav.map(item=><button key={item.id} className={tab===item.id?'horizontal-tab active':'horizontal-tab'} aria-current={tab===item.id?'page':undefined} onClick={()=>setTab(item.id)}>{item.label}</button>)}<div className="ai-nav"><button onClick={openAi} aria-label="AI에게 질문" aria-expanded={aiOpen}><Sparkles size={17}/>AI에게 질문{!aiAsked&&<span className="ai-new">새 기능</span>}</button></div></nav><div className="header-status"><span className="badge amber">출하 시뮬레이션</span><button className="status-link" onClick={()=>setTab('prices')}><span className={prices?.status==='live'?'dot live':'dot'}/>{kamisLabel}</button><button className="header-info" aria-label="자료와 계산 안내" onClick={()=>setTab('evidence')}><CircleHelp size={19}/></button></div></header>
+  return <div className="app-shell">
+    <div className="main-shell"><header className="horizontal-header"><a className="brand" href="#" onClick={e=>{e.preventDefault();setTab('dashboard');}}><span className="brand-icon"><Sprout size={23}/></span><span>출하 내비게이션</span></a><nav aria-label="주 메뉴">{nav.map(item=><button key={item.id} className={tab===item.id?'horizontal-tab active':'horizontal-tab'} aria-current={tab===item.id?'page':undefined} onClick={()=>setTab(item.id)}>{item.label}</button>)}</nav><div className="header-status"><span className="badge amber">출하 시뮬레이션</span><button className="status-link" onClick={()=>setTab('prices')}><span className={prices?.status==='live'?'dot live':'dot'}/>{kamisLabel}</button><button className="header-info" aria-label="자료와 계산 안내" onClick={()=>setTab('evidence')}><CircleHelp size={19}/></button></div></header>
     <main>
       <section className="dashboard-title"><div><h1>{tab==='dashboard'?'관심 품목':tab==='map'?'지도·물량 흐름':tab==='simulation'?'출하 시뮬레이션':tab==='prices'?'KAMIS 가격 흐름':'계산 근거'}</h1><p>배추 출하 조건과 시장별 결과를 한곳에서 비교하세요.</p></div><button className="button ghost" onClick={()=>setTab('simulation')}><Settings2 size={16}/>출하 조건 설정</button></section>
       <div className="notice"><ShieldCheck size={18}/><p><b>KAMIS 가격 흐름을 참고해 출하 조건을 비교합니다.</b> 경매가격·요율·운임의 기본값은 예시입니다. 결과는 입력 조건에 따른 예상 수취액이며 실제 수익을 보장하지 않습니다.</p><button onClick={()=>setTab('evidence')}>계산 기준<ArrowRight size={14}/></button></div>
@@ -115,7 +112,7 @@ function App() {
       {tab==='prices'&&<KamisView query={query} setQuery={setQuery} today={today()} configured={kamisConfigured} prices={prices} busy={priceBusy} error={priceError} load={loadPrices} seriesIndex={seriesIndex} setSeriesIndex={setSeriesIndex} renderChart={series=><PriceChart series={series}/>} onCompare={context=>{setDecision(context);patch({price_drop_pct:context.assumption.price_drop_pct});setTab('dashboard');setToast(`KAMIS 참고 자료를 기록하고 가격 −${context.assumption.price_drop_pct}% 가정을 비교합니다.`);}}/>}
       {tab==='evidence'&&<EvidenceView scenario={s} result={goodResult?result:null}/>}
       <footer><span><Sprout size={15}/>출하 내비게이션</span><span>가격을 예측하기 전에, 비교할 근거부터.</span><span>KAMIS 실제 가격정보 활용 · 출하 전략 시뮬레이션</span></footer>
-    </main></div><AiAssistant open={aiOpen} onOpen={openAi} onClose={closeAi} onFirstQuestion={()=>setAiAsked(true)} onNavigate={setTab} scenario={s} result={goodResult?result:null} prices={prices} tab={tab} ready={aiReady} busy={busy||!!error}/>{toast&&<div className="toast" role="status"><Check size={17}/>{toast}</div>}
+    </main></div>{toast&&<div className="toast" role="status"><Check size={17}/>{toast}</div>}
   </div>;
 }
 
